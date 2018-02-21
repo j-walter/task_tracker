@@ -1,0 +1,14 @@
+<h2>Sign in</h2>
+
+<%= form_for @conn, auth_path(@conn, :create), [name: :auth], fn f -> %>
+  <div class="form-group">
+    <label>Email</label>
+    <%= text_input f, :email, class: "form-control" %>
+  </div>
+  <div class="form-group">
+   <div class="btn-group" role="group">
+    <%= submit "Sign in", class: "btn btn-primary btn-space" %>
+  <a class="btn btn-primary" href="<%= user_path(@conn, :new_self)%>">Register</a>
+  </div>
+  </div>
+<% end %>

@@ -1,0 +1,36 @@
+<h2>All Tasks</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Time taken</th>
+      <th>Is completed</th>
+      <th>Assigned to</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for task <- @tasks do %>
+    <tr>
+      <td><%= task.title %></td>
+      <td><%= task.time_taken %></td>
+      <td><%= task.is_completed %></td>
+      <td>
+      <%= if !!task.user do %>
+      <%= task.user.first_name <> " " <> task.user.last_name <> " (" <> task.user.email <> ")" %>
+      <% else %>
+      No one
+      <% end %>
+      </td>
+      <td class="text-right">
+        <span><%= link "Show", to: task_path(@conn, :show, task), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: task_path(@conn, :edit, task), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: task_path(@conn, :delete, task), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Task", to: task_path(@conn, :new) %></span>

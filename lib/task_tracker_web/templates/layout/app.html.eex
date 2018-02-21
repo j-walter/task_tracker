@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hello TaskTracker!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <div class="container">
+	  <br>
+	  <nav class="navbar navbar-expand-sm bg-light">
+
+        <a class="navbar-brand" href="<%= task_path(@conn, :index) %>">TaskTracker</a>
+            <ul class="navbar-nav mr-auto">
+            <%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
+                <li class="nav-item">
+                <a class="nav-link" href="<%= user_path(@conn, :index) %>">Admin</a>
+                </li>
+            <% end %>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+            <%= if !!Plug.Conn.get_session(@conn, "user") do %>
+                <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <%= Map.get(Plug.Conn.get_session(@conn, "user"), :first_name) %>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="nav-link" href="<%= user_path(@conn, :edit_self) %>">Account</a>
+                    <a class="nav-link" href="<%= auth_path(@conn, :delete) %>">Sign out</a>
+                </div>
+                </li>
+            <% else %>
+                 <li class="nav-item">
+                    <a class="nav-link" href="<%= auth_path(@conn, :new) %>">Sign in</a>
+                </li>
+            <% end %>
+            </ul>
+
+      </nav>
+      <br><br>
+      <main role="main">
+        <div class="container">
+        <%= render @view_module, @view_template, assigns %>
+        </div>
+      </main>
+
+    </div> <!-- /container -->
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<h2><%= @task.title %></h2>
+
+<ul>
+
+
+  <li>
+    <strong>Description:</strong>
+    <%= @task.description %>
+  </li>
+
+  <li>
+    <strong>Time taken:</strong>
+    <%= @task.time_taken %>
+  </li>
+
+  <li>
+    <strong>Is completed:</strong>
+    <%= @task.is_completed %>
+  </li>
+
+  <li>
+    <strong>Assigned to:</strong>
+    <%= if !!@task.user do %>
+    <%= @task.user.first_name <> " " <> @task.user.last_name <> " (" <> @task.user.email <> ")" %>
+    <% else %>
+    No one
+    <% end %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: task_path(@conn, :edit, @task) %></span>
+<span><%= link "Back", to: task_path(@conn, :index) %></span>
