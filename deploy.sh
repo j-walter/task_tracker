@@ -11,7 +11,7 @@ if [ ! $(id -u) = 0 ]; then
 fi
 
 POSTGRES_PASSWORD=$(openssl rand -base64 32)
-SECRET_KEY_BASE=$(openssl rand -base64 32)
+SECRET_KEY_BASE=$(openssl rand -base64 64)
 
 echo "
 use Mix.Config
