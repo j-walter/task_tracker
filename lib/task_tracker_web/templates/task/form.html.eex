@@ -18,34 +18,89 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :time_taken, class: "control-label" %>
-    <%= number_input f, :time_taken, class: "form-control", min: "0", step: "15" %>
-    <%= error_tag f, :time_taken %>
-  </div>
-
-  <div class="form-group">
     <%= label f, :is_completed, class: "control-label" %>
     <%= checkbox f, :is_completed, class: "checkbox" %>
     <%= error_tag f, :is_completed %>
   </div>
 
   <div class="form-group">
+    <label>Assigned to</label>
     <div class="form-check">
       <%= radio_button(f, :user_id, nil, checked: !@task.user_id) %>
       <label class="form-check-label" for="user_id_nil">
-        No assignee
+        No one
       </label>
     </div>
-    <%= for user <- @users do %>
+    <%= for user <- @subordinates do %>
     <div class="form-check">
       <%= radio_button(f, :user_id, user.id, checked: user.id === @task.user_id) %>
       <label class="form-check-label" for="user_id_<%= user.id %>">
-        <%= user.first_name %> <%= user.last_name %> (<%= user.email %>)
+        <%= TaskTracker.Accounts.User.display_name(user) %>
       </label>
     </div>
     <% end %>
     <%= error_tag f, :user_id %>
   </div>
+
+ <strong>Time Spent</strong> (Start / End):
+<ul class="table" id="time_blocks">
+
+</ul>
+<%= if @task.user_id === Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :id, nil) do %>
+<div class="form-group" id="time_block_0">
+<label>Start<input id="time_block_start" class="form-control" type="datetime-local" /></label><label>End<input id="time_block_end" class="form-control" type="datetime-local" /></label> <button type="button" class="btn btn-primary" onclick="saveTimeBlock(this)">Save</button>
+</div>
+<% end %>
+
+  <script>
+  window.onload = function () {
+    $.ajax({
+      url: "<%= "/api/tasks/" <> Integer.to_string(@task.id) <> "/time_blocks" %>"
+    }).then(function(data) {
+      try {
+        var time_blocks = JSON.parse(data);
+        time_blocks_container = $("#time_blocks");
+        $.each(time_blocks, function(n, o) {
+          time_blocks_container.append("<div class=\"form-group\" id=\"time_block_" + o.id + "\"><input id=\"time_block_id\" type=\"hidden\" value=\"" + o.id + "\"/><label>Start<input id=\"time_block_start\" class=\"form-control\" type=\"datetime-local\" value=\"" + o.start + "\" /></label><label>End<input id=\"time_block_end\" class=\"form-control\" type=\"datetime-local\" value=\"" + o.end + "\"></label><button type=\"button\" class=\"btn btn-primary\" onclick=\"saveTimeBlock(this)\">Save</button></div><button type=\"button\" class=\"btn btn-primary\" onclick=\"deleteTimeBlock(this)\">Save</button>")
+        });
+      } catch (error) {
+
+      }
+    });
+  }
+  function saveTimeBlock(b) {
+    var id = b.parentElement.id.split("time_block_", 2)[1];
+    var method;
+    var url = "<%= "/api/tasks/" <> Integer.to_string(@task.id) <> "/time_blocks" %>";
+    if (id == "0") {
+      method = "POST";
+    } else {
+      method = "PUT";
+      url += "/" + id;
+    }
+    var jsonData = {};
+    $(b.parentElement).find("input").each(function(i) {
+        var param = b.parentElement.id.split("time_block_", 2)[1];
+        jsonData[param] = $(this).val();
+    });
+    $.ajax({
+      url: url,
+      type: method,
+      putData: JSON.stringify({"time_block": jsonData}),
+    }).then(function(data) {
+      location.reload();
+    });
+  }
+  function deleteTimeBlock(b) {
+    var id = b.parentElement.id.split("time_block_", 2)[1];
+    $.ajax({
+      url: "<%= "/api/tasks/" <> Integer.to_string(@task.id) <> "/time_blocks/" %>" + id,
+      type: 'DELETE',
+    }).then(function(data) {
+      location.reload();
+    });
+  }
+</script>
 
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary" %>

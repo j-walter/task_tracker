@@ -1,5 +1,5 @@
 <h2>Sign in</h2>
-
+<br>
 <%= form_for @conn, auth_path(@conn, :create), [name: :auth], fn f -> %>
   <div class="form-group">
     <label>Email</label>

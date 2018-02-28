@@ -1,5 +1,18 @@
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <h2>Edit User</h2>
+<% else %>
+<h2>My account</h2>
+<% end %>
+<br>
 
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <%= render "form.html", Map.put(assigns, :action, user_path(@conn, :update, @user)) %>
+<% else %>
+<%= render "form.html", Map.put(assigns, :action, user_path(@conn, :update_self, @user)) %>
+<% end %>
 
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
+<% else %>
+<span><%= link "Back", to: user_path(@conn, :show_self, @user) %></span>
+<% end %>

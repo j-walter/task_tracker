@@ -12,6 +12,11 @@
   </head>
 
   <body>
+    <%= if get_flash(@conn, :error) do  %>
+        <div class="alert alert-danger" role="alert">
+          <%= get_flash(@conn, :error) %>
+        </div>
+    <% end %>
     <div class="container">
 	  <br>
 	  <nav class="navbar navbar-expand-sm bg-light">
@@ -31,7 +36,7 @@
                     <%= Map.get(Plug.Conn.get_session(@conn, "user"), :first_name) %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="nav-link" href="<%= user_path(@conn, :edit_self) %>">Account</a>
+                    <a class="nav-link" href="<%= user_path(@conn, :show_self, Plug.Conn.get_session(@conn, "user")) %>">Account</a>
                     <a class="nav-link" href="<%= auth_path(@conn, :delete) %>">Sign out</a>
                 </div>
                 </li>

@@ -9,17 +9,25 @@ defmodule TaskTrackerWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :browser_authentication do
+  pipeline :cookie_auth do
     plug TaskTrackerWeb.Authentication
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :put_secure_browser_headers
+  end
+
+  scope "/api", TaskTrackerWeb do
+    pipe_through :api
+    pipe_through :cookie_auth
+    resources "/tasks/:task_id/time_blocks", TimeBlockController
   end
 
   scope "/admin", TaskTrackerWeb do
     pipe_through :browser
-    pipe_through :browser_authentication
+    pipe_through :cookie_auth
     resources "/users", UserController
     resources "/", UserController
   end
@@ -28,17 +36,17 @@ defmodule TaskTrackerWeb.Router do
     pipe_through :browser
     get "/register", UserController, :new_self
     post "/register", UserController, :create_self
+    # all authenticated routes below
     get "/signin", AuthController, :new
     post "/signin", AuthController, :create
+    pipe_through :cookie_auth
     get "/signout", AuthController, :delete
-    # all authenticated routes below
-    pipe_through :browser_authentication
-    get "/account", UserController, :edit_self
-    post "/account", UserController, :update_self
+    get "/account/:id", UserController, :show_self
+    get "/account/:id/edit", UserController, :edit_self
+    post "/account/:id/edit", UserController, :update_self
     resources "/tasks", TaskController
     get "/*path", RedirectController, :index
   end
-
 
 
 end

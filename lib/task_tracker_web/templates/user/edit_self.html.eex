@@ -1,4 +1,0 @@
-<h2>My Account</h2>
-
-<%= render "form_self.html", Map.put(assigns, :action, user_path(@conn, :update, @user)) %>
-

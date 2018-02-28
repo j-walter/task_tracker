@@ -4,7 +4,6 @@
   <thead>
     <tr>
       <th>Title</th>
-      <th>Time taken</th>
       <th>Is completed</th>
       <th>Assigned to</th>
       <th></th>
@@ -14,13 +13,12 @@
 <%= for task <- @tasks do %>
     <tr>
       <td><%= task.title %></td>
-      <td><%= task.time_taken %></td>
       <td><%= task.is_completed %></td>
       <td>
       <%= if !!task.user do %>
-      <%= task.user.first_name <> " " <> task.user.last_name <> " (" <> task.user.email <> ")" %>
+        <%= task.user.first_name <> " " <> task.user.last_name %> (<%= task.user.email %>)
       <% else %>
-      No one
+        No one
       <% end %>
       </td>
       <td class="text-right">
@@ -33,4 +31,6 @@
   </tbody>
 </table>
 
+<%= if !Enum.empty?(Map.get(TaskTracker.Accounts.User.get!(Plug.Conn.get_session(@conn, "user").id) || %{}, :subordinates, [])) or Plug.Conn.get_session(@conn, "user").id === TaskTracker.Accounts.User.get!(Plug.Conn.get_session(@conn, "user").id).manager_id do %>
 <span><%= link "New Task", to: task_path(@conn, :new) %></span>
+<% end %>

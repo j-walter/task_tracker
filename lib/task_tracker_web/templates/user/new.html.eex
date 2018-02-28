@@ -1,11 +1,14 @@
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <h2>New User</h2>
-
+<% else %>
+<h2>Register</h2>
+<% end %>
+<br>
 <%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <%= render "form.html", Map.put(assigns, :action, user_path(@conn, :create)) %>
 <% else %>
-<%= render "form_self.html", Map.put(assigns, :action, user_path(@conn, :create_self)) %>
+<%= render "form.html", Map.put(assigns, :action, user_path(@conn, :create_self)) %>
 <% end %>
-
 <%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
 <% end %>

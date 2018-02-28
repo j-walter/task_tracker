@@ -1,5 +1,9 @@
-<h2>Show User</h2>
-
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
+<h2>Edit User</h2>
+<% else %>
+<h2>My account</h2>
+<% end %>
+<br>
 <ul>
 
   <li>
@@ -17,12 +21,38 @@
     <%= @user.email %>
   </li>
 
-  <li>
-    <strong>Is admin?</strong>
-    <%= @user.is_admin %>
+   <li>
+    <strong>Manager:</strong>
+    <%= if !!@user.manager do %>
+        <%= @user.manager.first_name %> <%= @user.manager.last_name %>
+    <% else %>
+        None
+    <% end %>
   </li>
+
+  <li>
+    <strong>Subordinates:</strong>
+    <ul>
+    <%= for subordinate <- @user.subordinates do %>
+        <%= if subordinate.id != @user.id do %>
+            <li><%= TaskTracker.Accounts.User.display_name(subordinate) %></li>
+        <% end %>
+    <% end %>
+    </ul>
+  </li>
+
+    <%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
+      <li>
+        <strong>Is admin?</strong>
+        <%= @user.is_admin %>
+      </li>
+    <% end %>
 
 </ul>
 
+<%= if Map.get(Plug.Conn.get_session(@conn, "user") || %{}, :is_admin, false) do %>
 <span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
+<% else %>
+<span><%= link "Edit", to: user_path(@conn, :edit_self, @user) %></span>
+<% end %>

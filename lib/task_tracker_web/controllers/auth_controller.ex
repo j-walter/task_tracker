@@ -1,5 +1,7 @@
 defmodule TaskTrackerWeb.AuthController do
   use TaskTrackerWeb, :controller
+  alias TaskTracker.Accounts.Auth
+  alias TaskTracker.Accounts.Session
 
   def new(conn, _params) do
     if !get_session(conn, "user") do
@@ -10,11 +12,10 @@ defmodule TaskTrackerWeb.AuthController do
   end
 
   def create(conn, params) do
-    user = TaskTracker.Accounts.Auth.login(params)
+    user = Auth.login(params)
     if !!user do
-      TaskTracker.Accounts.Session.create(Map.get(conn.cookies, "sid"), user)
-      put_session(conn, "user", user)
-      |> redirect(to: task_path(conn, :index))
+      Session.create(Map.get(conn.cookies, "sid"), user)
+      redirect(conn, to: task_path(conn, :index))
     else
       redirect(conn, to: auth_path(conn, :new))
     end
@@ -23,8 +24,9 @@ defmodule TaskTrackerWeb.AuthController do
   def delete(conn, _params) do
     user = get_session(conn, "user")
     if !!user do
-      TaskTracker.Accounts.Session.delete(Map.get(conn.cookies, "sid"))
+      Session.delete(Map.get(conn.cookies, "sid"))
       clear_session(conn)
+      |> configure_session(:drop)
       |> redirect(to: auth_path(conn, :new))
     else
       redirect(conn, to: auth_path(conn, :new))

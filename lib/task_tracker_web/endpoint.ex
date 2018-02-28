@@ -34,11 +34,12 @@ defmodule TaskTrackerWeb.Endpoint do
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
+    max_age: 30*24*60*60,
     store: :cookie,
-    max_age: 24*60*60*30,
     key: "sid",
     signing_salt: "kK2Dn6FK",
-    key_length: 64
+    key_length: 64,
+    http_only: true
 
   plug TaskTrackerWeb.Router
 

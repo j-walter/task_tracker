@@ -1,33 +1,48 @@
 <h2><%= @task.title %></h2>
 
-<ul>
 
 
-  <li>
-    <strong>Description:</strong>
+
+
+    <strong>Description</strong>:
     <%= @task.description %>
-  </li>
-
-  <li>
-    <strong>Time taken:</strong>
-    <%= @task.time_taken %>
-  </li>
-
-  <li>
-    <strong>Is completed:</strong>
+      <br>
+    <strong>Is completed</strong>:
     <%= @task.is_completed %>
-  </li>
+        <br>
 
-  <li>
-    <strong>Assigned to:</strong>
+    <strong>Assigned to</strong>:
     <%= if !!@task.user do %>
-    <%= @task.user.first_name <> " " <> @task.user.last_name <> " (" <> @task.user.email <> ")" %>
+    <%= @task.user.first_name <> " " <> @task.user.last_name %> (<%= @task.user.email %>)
     <% else %>
     No one
     <% end %>
-  </li>
+        <br>
+
+
+
+ <strong>Time Spent</strong> (Start / End):
+<ul class="table" id="time_blocks">
+
+
 
 </ul>
+
+  <script>
+  window.onload = function () {
+    $.ajax({
+      url: "<%= "/api/tasks/" <> Integer.to_string(@task.id) <> "/time_blocks" %>"
+    }).then(function(data) {
+      var time_blocks = JSON.parse(data);
+      time_blocks_container = $("#time_blocks");
+      $.each(time_blocks, function(n, o) {
+          time_blocks_container.append("<li>" + o.start + " / " + o.end + "</li>")
+      });
+    });
+  }
+</script>
+
+
 
 <span><%= link "Edit", to: task_path(@conn, :edit, @task) %></span>
 <span><%= link "Back", to: task_path(@conn, :index) %></span>
